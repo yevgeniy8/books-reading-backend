@@ -73,4 +73,38 @@ const login = async (req, res, next) => {
     }
 };
 
-module.exports = { register, login };
+const logout = async (req, res, next) => {
+    try {
+        const { _id } = req.user;
+        const user = await User.findOne({ _id });
+        if (!user) {
+            throw HttpError(401, 'Not authorized');
+        }
+
+        await User.findByIdAndUpdate({ _id }, { token: '' });
+
+        res.status(204).end();
+    } catch (error) {
+        next(error);
+    }
+};
+
+const getCurrent = async (req, res, next) => {
+    try {
+        const { _id, name, email } = req.user;
+        const user = await User.findOne({ _id });
+
+        if (!user) {
+            throw HttpError(401, 'Not authorized');
+        }
+
+        res.status(200).json({
+            name,
+            email,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+module.exports = { register, login, logout, getCurrent };
