@@ -122,6 +122,7 @@ const googleAuth = async (req, res, next) => {
             access_type: 'offline',
             prompt: 'consent',
         });
+
         return res.redirect(
             `https://accounts.google.com/o/oauth2/v2/auth?${stringifiedParams}`
         );
@@ -131,6 +132,7 @@ const googleAuth = async (req, res, next) => {
 };
 
 const googleRedirect = async (req, res, next) => {
+    console.log('oooooo');
     try {
         const fullUrl = `${req.protocol}://${req.get('host')}${
             req.originalUrl
@@ -149,6 +151,7 @@ const googleRedirect = async (req, res, next) => {
                 code,
             },
         });
+
         const userData = await axios({
             url: 'https://www.googleapis.com/oauth2/v2/userinfo',
             method: 'get',
@@ -157,15 +160,14 @@ const googleRedirect = async (req, res, next) => {
             },
         });
 
+        console.log(userData);
+
         // userData.data.email
         // ...
         // ...
         // ...
-        // return res.redirect(
-        //     `${process.env.FRONTEND_URL}?email=${userData.data.email}`
-        // );
         return res.redirect(
-            `http://localhost:3000?email=${userData.data.email}`
+            `${process.env.FRONTEND_URL}?email=${userData.data.email}`
         );
     } catch (error) {
         next(error);
