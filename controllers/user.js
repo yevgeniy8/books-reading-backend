@@ -4,6 +4,7 @@ const HttpError = require('../helpers/HttpError');
 const jwt = require('jsonwebtoken');
 // const queryString = require('querystring');
 const queryString = require('query-string');
+const createTokens = require('../helpers/createTokens');
 
 const axios = require('axios');
 
@@ -60,10 +61,23 @@ const login = async (req, res, next) => {
             expiresIn: '23h',
         });
 
-        const user = await User.findByIdAndUpdate(
-            { _id: payload.id },
-            { token }
-        );
+        // const { accessToken, refreshToken } = createTokens(doc._id);
+
+        // const user = await User.findByIdAndUpdate(
+        //     { _id: doc._id },
+        //     { accessToken, refreshToken }
+        // );
+
+        const user = await User.findByIdAndUpdate({ _id: doc._id }, { token });
+
+        // res.status(200).json({
+        //     accessToken,
+        //     refreshToken,
+        //     user: {
+        //         name: user.name,
+        //         email: user.email,
+        //     },
+        // });
 
         res.status(200).json({
             token,
@@ -185,6 +199,23 @@ const googleRedirect = async (req, res, next) => {
     }
 };
 
+const refresh = async (req, res, next) => {
+    try {
+        const { _id } = req.user;
+
+        const { accessToken, refreshToken } = createTokens(_id);
+
+        await User.findByIdAndUpdate({ _id }, { accessToken, refreshToken });
+
+        res.status(200).json({
+            accessToken,
+            refreshToken,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     register,
     login,
@@ -192,4 +223,5 @@ module.exports = {
     getCurrent,
     googleAuth,
     googleRedirect,
+    refresh,
 };

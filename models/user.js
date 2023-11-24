@@ -18,6 +18,14 @@ const userSchema = new mongoose.Schema(
             unique: true,
         },
         token: String,
+        // accessToken: {
+        //     type: String,
+        //     default: '',
+        // },
+        // refreshToken: {
+        //     type: String,
+        //     default: '',
+        // },
     },
     { timestamps: true, versionKey: false }
 );
