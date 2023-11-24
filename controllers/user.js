@@ -2,7 +2,9 @@ const { User, schemas } = require('../models/user');
 const bcryptjs = require('bcryptjs');
 const HttpError = require('../helpers/HttpError');
 const jwt = require('jsonwebtoken');
-const queryString = require('querystring');
+// const queryString = require('querystring');
+const queryString = require('query-string');
+
 const axios = require('axios');
 
 const register = async (req, res, next) => {
@@ -123,6 +125,8 @@ const googleAuth = async (req, res, next) => {
             prompt: 'consent',
         });
 
+        // console.log(`${process.env.BASE_URL}/users/google-redirect`);
+
         return res.redirect(
             `https://accounts.google.com/o/oauth2/v2/auth?${stringifiedParams}`
         );
@@ -132,7 +136,7 @@ const googleAuth = async (req, res, next) => {
 };
 
 const googleRedirect = async (req, res, next) => {
-    console.log('oooooo');
+    // console.log('object');
     try {
         const fullUrl = `${req.protocol}://${req.get('host')}${
             req.originalUrl
@@ -140,6 +144,13 @@ const googleRedirect = async (req, res, next) => {
         const urlObj = new URL(fullUrl);
         const urlParams = queryString.parse(urlObj.search);
         const code = urlParams.code;
+        // const code = urlParams['?code'];
+
+        // console.log(urlParams);
+
+        // console.log(queryString.parse(urlObj.search.split('?')[1]).code);
+        // console.log(urlObj.searchParams.get('code'));
+
         const tokenData = await axios({
             url: `https://oauth2.googleapis.com/token`,
             method: 'post',
@@ -148,6 +159,7 @@ const googleRedirect = async (req, res, next) => {
                 client_secret: process.env.GOOGLE_CLIENT_SECRET,
                 redirect_uri: `${process.env.BASE_URL}/users/google-redirect`,
                 grant_type: 'authorization_code',
+                // code: '4/0AfJohXnc-F1MBjyhjQDzUuPhps66kQl8p7WE1v1d2dxjAI4RtDaBCs_mvmnw9d42BMrbtQ',
                 code,
             },
         });
@@ -160,8 +172,6 @@ const googleRedirect = async (req, res, next) => {
             },
         });
 
-        console.log(userData);
-
         // userData.data.email
         // ...
         // ...
@@ -170,6 +180,7 @@ const googleRedirect = async (req, res, next) => {
             `${process.env.FRONTEND_URL}?email=${userData.data.email}`
         );
     } catch (error) {
+        // console.log(error);
         next(error);
     }
 };
