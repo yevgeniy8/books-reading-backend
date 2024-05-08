@@ -1,5 +1,5 @@
 const { Plan, schemas } = require('../models/plan');
-const { Book } = require('../../models/book');
+const { Book } = require('../models/book');
 const { History } = require('../../models/history');
 const {
     Statistic,
