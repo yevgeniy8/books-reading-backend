@@ -1,5 +1,5 @@
 const { Plan } = require('../models/plan');
-const { Book, schemas } = require('../../models/book');
+const { Book, schemas } = require('../models/book');
 const { isValidObjectId } = require('mongoose');
 const HttpError = require('../helpers/HttpError');
 
