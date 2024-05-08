@@ -1,10 +1,7 @@
 const { Plan, schemas } = require('../models/plan');
 const { Book } = require('../models/book');
-const { History } = require('../../models/history');
-const {
-    Statistic,
-    schemas: statisticSchemas,
-} = require('../../models/statistic');
+const { History } = require('../models/history');
+const { Statistic, schemas: statisticSchemas } = require('../models/statistic');
 const HttpError = require('../helpers/HttpError');
 const validateTimezone = require('../helpers/validateTimezone');
 const { differenceInCalendarDays } = require('date-fns');
