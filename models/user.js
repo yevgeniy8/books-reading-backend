@@ -17,15 +17,15 @@ const userSchema = new mongoose.Schema(
             required: [true, 'Email is required'],
             unique: true,
         },
-        token: String,
-        // accessToken: {
-        //     type: String,
-        //     default: '',
-        // },
-        // refreshToken: {
-        //     type: String,
-        //     default: '',
-        // },
+        // token: String,
+        accessToken: {
+            type: String,
+            default: '',
+        },
+        refreshToken: {
+            type: String,
+            default: '',
+        },
     },
     { timestamps: true, versionKey: false }
 );

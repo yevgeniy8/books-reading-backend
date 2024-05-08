@@ -1,7 +1,7 @@
 const { User, schemas } = require('../models/user');
 const bcryptjs = require('bcryptjs');
 const HttpError = require('../helpers/HttpError');
-const jwt = require('jsonwebtoken');
+// const jwt = require('jsonwebtoken');
 // const queryString = require('querystring');
 const queryString = require('query-string');
 const createTokens = require('../helpers/createTokens');
@@ -53,39 +53,39 @@ const login = async (req, res, next) => {
             throw HttpError(401, 'Email or password is wrong');
         }
 
-        const payload = {
-            id: doc._id,
-        };
+        // const payload = {
+        //     id: doc._id,
+        // };
 
-        const token = jwt.sign(payload, process.env.JWT_SECRET, {
-            expiresIn: '23h',
-        });
-
-        // const { accessToken, refreshToken } = createTokens(doc._id);
-
-        // const user = await User.findByIdAndUpdate(
-        //     { _id: doc._id },
-        //     { accessToken, refreshToken }
-        // );
-
-        const user = await User.findByIdAndUpdate({ _id: doc._id }, { token });
-
-        // res.status(200).json({
-        //     accessToken,
-        //     refreshToken,
-        //     user: {
-        //         name: user.name,
-        //         email: user.email,
-        //     },
+        // const token = jwt.sign(payload, process.env.JWT_SECRET, {
+        //     expiresIn: '23h',
         // });
 
+        const { accessToken, refreshToken } = createTokens(doc._id);
+
+        const user = await User.findByIdAndUpdate(
+            { _id: doc._id },
+            { accessToken, refreshToken }
+        );
+
+        // const user = await User.findByIdAndUpdate({ _id: doc._id }, { token });
+
         res.status(200).json({
-            token,
+            accessToken,
+            refreshToken,
             user: {
                 name: user.name,
                 email: user.email,
             },
         });
+
+        // res.status(200).json({
+        //     token,
+        //     user: {
+        //         name: user.name,
+        //         email: user.email,
+        //     },
+        // });
     } catch (error) {
         next(error);
     }
@@ -99,7 +99,11 @@ const logout = async (req, res, next) => {
             throw HttpError(401, 'Not authorized');
         }
 
-        await User.findByIdAndUpdate({ _id }, { token: '' });
+        // await User.findByIdAndUpdate({ _id }, { token: '' });
+        await User.findByIdAndUpdate(_id, {
+            accessToken: '',
+            refreshToken: '',
+        });
 
         res.status(204).end();
     } catch (error) {

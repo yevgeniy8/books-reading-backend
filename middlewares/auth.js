@@ -11,26 +11,30 @@ const auth = (req, res, next) => {
             throw HttpError(401, 'Not authorized');
         }
 
-        jwt.verify(token, process.env.JWT_SECRET, async (err, decode) => {
-            if (err) {
-                if (err.name === 'TokenExpiredError') {
-                    return next(HttpError(401, 'Token is expired'));
+        jwt.verify(
+            token,
+            process.env.JWT_ACCESS_SECRET,
+            async (err, decode) => {
+                if (err) {
+                    if (err.name === 'TokenExpiredError') {
+                        return next(HttpError(401, 'Token is expired'));
+                    }
                 }
+
+                if (!decode) {
+                    return next(HttpError(401, 'Not authorized'));
+                }
+
+                const user = await User.findOne({ _id: decode.id });
+
+                if (!user || !user.accessToken || token !== user.accessToken) {
+                    return next(HttpError(401, 'Not authorized'));
+                }
+
+                req.user = user;
+                next();
             }
-
-            if (!decode) {
-                return next(HttpError(401, 'Not authorized'));
-            }
-
-            const user = await User.findOne({ _id: decode.id });
-
-            if (!user || !user.token || token !== user.token) {
-                return next(HttpError(401, 'Not authorized'));
-            }
-
-            req.user = user;
-            next();
-        });
+        );
     } catch (error) {
         next(error);
     }
