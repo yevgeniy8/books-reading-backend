@@ -180,7 +180,8 @@ const finish = async (req, res, next) => {
         }
 
         if (plan.status === 'idle') {
-            await Plan.findByIdAndRemove(plan._id);
+            await Plan.findByIdAndDelete(plan._id);
+            // await Plan.findByIdAndRemove(plan._id);
 
             return res.status(204).send();
         }
@@ -201,7 +202,8 @@ const finish = async (req, res, next) => {
             owner,
         });
 
-        await Plan.findByIdAndRemove(plan._id);
+        // await Plan.findByIdAndRemove(plan._id);
+        await Plan.findByIdAndDelete(plan._id);
 
         res.status(204).send();
     } catch (error) {
