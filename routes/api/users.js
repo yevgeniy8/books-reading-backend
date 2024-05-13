@@ -18,6 +18,6 @@ router.get('/google', UserControllers.googleAuth);
 
 router.get('/google-redirect', UserControllers.googleRedirect);
 
-router.post('refresh', verifyRefreshToken, UserControllers.refresh);
+router.post('/refresh', verifyRefreshToken, UserControllers.refresh);
 
 module.exports = router;
