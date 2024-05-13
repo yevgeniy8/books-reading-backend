@@ -23,10 +23,20 @@ const register = async (req, res, next) => {
         }
 
         const passwordHash = await bcryptjs.hash(password, 10);
-        const doc = await User.create({ ...req.body, password: passwordHash });
+        const newUser = await User.create({
+            ...req.body,
+            password: passwordHash,
+        });
+
+        // const doc = await User.create({ ...req.body, password: passwordHash });
+
+        // res.status(201).json({
+        //     user: { name: doc.name, email: doc.email },
+        // });
 
         res.status(201).json({
-            user: { name: doc.name, email: doc.email },
+            name: newUser.name,
+            email: newUser.email,
         });
     } catch (error) {
         next(error);
@@ -70,13 +80,22 @@ const login = async (req, res, next) => {
 
         // const user = await User.findByIdAndUpdate({ _id: doc._id }, { token });
 
-        res.status(200).json({
-            accessToken,
-            refreshToken,
-            user: {
+        // res.status(200).json({
+        //     accessToken,
+        //     refreshToken,
+        //     user: {
+        //         name: user.name,
+        //         email: user.email,
+        //     },
+        // });
+
+        res.json({
+            userData: {
                 name: user.name,
                 email: user.email,
             },
+            accessToken,
+            refreshToken,
         });
 
         // res.status(200).json({
