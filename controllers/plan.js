@@ -5,7 +5,7 @@ const { Statistic, schemas: statisticSchemas } = require('../models/statistic');
 const HttpError = require('../helpers/HttpError');
 const validateTimezone = require('../helpers/validateTimezone');
 const { differenceInCalendarDays } = require('date-fns');
-const { utcToZonedTime, format } = require('date-fns-tz');
+const { toZonedTime, format } = require('date-fns-tz');
 
 const get = async (req, res, next) => {
     try {
@@ -39,7 +39,7 @@ const get = async (req, res, next) => {
             });
         }
 
-        const currentDate = utcToZonedTime(new Date(), timezone);
+        const currentDate = toZonedTime(new Date(), timezone);
 
         const difference = differenceInCalendarDays(
             new Date(plan.endDate),
@@ -92,6 +92,8 @@ const add = async (req, res, next) => {
         const { _id: owner } = req.user;
         const { timezone } = req.query;
 
+        console.log(req.body);
+
         validateTimezone(timezone);
 
         const plan = await Plan.findOne({ owner });
@@ -100,7 +102,7 @@ const add = async (req, res, next) => {
             throw HttpError(409, 'This user has a plan created.');
         }
 
-        const currentDate = utcToZonedTime(new Date(), timezone);
+        const currentDate = toZonedTime(new Date(), timezone);
 
         const differenceWithCurrentDate = differenceInCalendarDays(
             new Date(startDate),
@@ -184,7 +186,7 @@ const finish = async (req, res, next) => {
         }
 
         const completionDate = format(
-            utcToZonedTime(new Date(), timezone),
+            toZonedTime(new Date(), timezone),
             'yyyy-MM-dd'
         );
 
@@ -236,7 +238,7 @@ const addStatistics = async (req, res, next) => {
             throw HttpError(400, 'plan is not active');
         }
 
-        const currentDate = utcToZonedTime(new Date(), timezone);
+        const currentDate = toZonedTime(new Date(), timezone);
 
         const date = format(currentDate, 'yyyy-MM-dd');
         const time = format(currentDate, 'HH-mm-ss');
@@ -373,7 +375,7 @@ const changeStatus = async (req, res, next) => {
             throw HttpError(404);
         }
 
-        const currentDate = utcToZonedTime(new Date(), timezone);
+        const currentDate = toZonedTime(new Date(), timezone);
 
         if (status === 'active') {
             const difference = differenceInCalendarDays(
