@@ -74,30 +74,26 @@ const deleteById = async (req, res, next) => {
         const { _id: owner } = req.user;
         const { id } = req.params;
 
+        console.log(id, owner)
+
         if (!isValidObjectId(id)) {
             throw HttpError(400, `${id} is not valid id`);
         }
-
-        const { error } = schemas.addBookSchema.validate(req.body);
-
-        if (error) {
-            throw HttpError(400, error.message);
-        }
-
+      
         const plan = await Plan.findOne({ owner, books: { $in: [id] } });
-
+      
         if (plan) {
-            throw HttpError(400, 'This book is included in the plan');
+          throw HttpError(400, "This book is included in the plan");
         }
-
-        const result = await Book.findOneAndRemove({ _id: id, owner });
-
+      
+        const result = await Book.findByIdAndDelete({ _id: id, owner });
+      
         if (!result) {
-            throw HttpError(404);
+          throw HttpError(404);
         }
-
+      
         res.json({
-            _id: result._id,
+          _id: result._id,
         });
     } catch (error) {
         next(error);

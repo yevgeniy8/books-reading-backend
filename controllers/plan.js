@@ -92,8 +92,6 @@ const add = async (req, res, next) => {
         const { _id: owner } = req.user;
         const { timezone } = req.query;
 
-        console.log(req.body);
-
         validateTimezone(timezone);
 
         const plan = await Plan.findOne({ owner });
